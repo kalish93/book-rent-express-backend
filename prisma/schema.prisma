@@ -1,0 +1,124 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["referentialActions"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// model User {
+//   id        String   @id @default(uuid()) @db.Uuid
+//   name String
+//   email  String   @unique
+//   password  String
+//   location  String
+//   phoneNumber  String
+//   roleId    String   @map("role_id") @db.Uuid
+//   role      Role     @relation(fields: [roleId], references: [id])
+//   createdAt DateTime @default(now()) @map("created_at")
+//   updatedAt DateTime @updatedAt @map("updated_at")
+// }
+
+// model Role {
+//   id              String           @id @default(uuid()) @db.Uuid
+//   name            String
+//   users           User[]
+//   createdAt       DateTime         @default(now()) @map("created_at")
+//   updatedAt       DateTime         @updatedAt @map("updated_at")
+// }
+
+// model Book{
+//   id              String           @id @default(uuid()) @db.Uuid
+//   name            String
+//   Author            String
+//   categoryId    String   @map("categroy_id") @db.Uuid
+//   category      Category     @relation(fields: [categoryId], references: [id])
+// }
+
+// model Category{
+//   id              String           @id @default(uuid()) @db.Uuid
+//   name            String
+//   books           Book[]
+// }
+
+model User {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String
+  email                 String         @unique
+  password              String
+  location              String
+  phoneNumber           String
+  isActive              Boolean        @default(true)
+  isApprovedBookOwner   Boolean        @default(false)
+  roles                 UserRole[]     
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+  books                 BookOnUser[]
+  rentals               Rental[]
+}
+
+model Role {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+  users                 UserRole[]
+}
+
+model UserRole {
+  userId                String         @map("user_id") @db.Uuid
+  roleId                String         @map("role_id") @db.Uuid
+  user                  User           @relation(fields: [userId], references: [id])
+  role                  Role           @relation(fields: [roleId], references: [id])
+  @@id([userId, roleId])
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+}
+
+model Book {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String
+  author                String
+  categoryId            String         @map("category_id") @db.Uuid
+  category              Category       @relation(fields: [categoryId], references: [id])
+  owners                BookOnUser[]
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+}
+
+model Category {
+  id                    String         @id @default(uuid()) @db.Uuid
+  name                  String
+  books                 Book[]
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+}
+
+model BookOnUser {
+  id                    String         @id @default(uuid()) @db.Uuid
+  userId                String         @map("user_id") @db.Uuid
+  bookId                String         @map("book_id") @db.Uuid
+  user                  User           @relation(fields: [userId], references: [id])
+  book                  Book           @relation(fields: [bookId], references: [id])
+  quantity              Int
+  price                 Float
+  availableQuantity    Int
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+  rentals               Rental[]
+}
+
+model Rental {
+  id                    String         @id @default(uuid()) @db.Uuid
+  bookOnUserId          String         @map("book_on_user_id") @db.Uuid
+  bookOnUser            BookOnUser     @relation(fields: [bookOnUserId], references: [id])
+  userId                String         @map("user_id") @db.Uuid
+  user                  User           @relation(fields: [userId], references: [id])
+  rentedAt              DateTime       @default(now())
+  returnedAt            DateTime?
+  rentalPrice           Float
+  createdAt             DateTime       @default(now()) @map("created_at")
+  updatedAt             DateTime       @updatedAt @map("updated_at")
+}
