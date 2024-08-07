@@ -4,6 +4,7 @@ const { jwtSecret } = require('../config');
 function generateToken(user) {
   const payload = {
     id: user.id,
+    name: user.name,
     email: user.email,
     roleId: user.roleId,
     permissions: user.permissions
@@ -19,6 +20,7 @@ function generateToken(user) {
 function generateRefreshToken(user) {
   const payload = {
     id: user.id,
+    name: user.name,
     email: user.email,
     roleId: user.roleId,
     permissions: user.permissions

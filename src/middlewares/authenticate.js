@@ -20,17 +20,17 @@ async function authenticate(req, res, next) {
 
     // Add user and permissions to the request for later use
     req.user = decoded;
-    req.permissions = decoded.permissions;
-    // Optional: Check if specific permissions are required for this route
-    if (req.requiredPermissions && permissionBasedAuthorization) {
-      const hasPermissions = req.requiredPermissions.every(permission =>
-        req.permissions.includes(permission)
-      );
+    // req.permissions = decoded.permissions;
+    // // Optional: Check if specific permissions are required for this route
+    // if (req.requiredPermissions && permissionBasedAuthorization) {
+    //   const hasPermissions = req.requiredPermissions.every(permission =>
+    //     req.permissions.includes(permission)
+    //   );
 
-      if (!hasPermissions) {
-        return res.status(403).json({ error: 'Forbidden - Insufficient permissions' });
-      } 
-    }
+    //   if (!hasPermissions) {
+    //     return res.status(403).json({ error: 'Forbidden - Insufficient permissions' });
+    //   } 
+    // }
 
     next();
   } catch (error) {

@@ -8,51 +8,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// model User {
-//   id        String   @id @default(uuid()) @db.Uuid
-//   name String
-//   email  String   @unique
-//   password  String
-//   location  String
-//   phoneNumber  String
-//   roleId    String   @map("role_id") @db.Uuid
-//   role      Role     @relation(fields: [roleId], references: [id])
-//   createdAt DateTime @default(now()) @map("created_at")
-//   updatedAt DateTime @updatedAt @map("updated_at")
-// }
-
-// model Role {
-//   id              String           @id @default(uuid()) @db.Uuid
-//   name            String
-//   users           User[]
-//   createdAt       DateTime         @default(now()) @map("created_at")
-//   updatedAt       DateTime         @updatedAt @map("updated_at")
-// }
-
-// model Book{
-//   id              String           @id @default(uuid()) @db.Uuid
-//   name            String
-//   Author            String
-//   categoryId    String   @map("categroy_id") @db.Uuid
-//   category      Category     @relation(fields: [categoryId], references: [id])
-// }
-
-// model Category{
-//   id              String           @id @default(uuid()) @db.Uuid
-//   name            String
-//   books           Book[]
-// }
-
 model User {
   id                    String         @id @default(uuid()) @db.Uuid
-  name                  String
+  name                  String?
   email                 String         @unique
   password              String
   location              String
   phoneNumber           String
   isActive              Boolean        @default(true)
   isApprovedBookOwner   Boolean        @default(false)
-  roles                 UserRole[]     
+  roles                 UserRole[]   
+  profilePicture        String? 
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
   books                 BookOnUser[]
@@ -97,17 +63,18 @@ model Category {
 }
 
 model BookOnUser {
-  id                    String         @id @default(uuid()) @db.Uuid
-  userId                String         @map("user_id") @db.Uuid
-  bookId                String         @map("book_id") @db.Uuid
-  user                  User           @relation(fields: [userId], references: [id])
-  book                  Book           @relation(fields: [bookId], references: [id])
-  quantity              Int
-  price                 Float
-  availableQuantity    Int
-  createdAt             DateTime       @default(now()) @map("created_at")
-  updatedAt             DateTime       @updatedAt @map("updated_at")
-  rentals               Rental[]
+  id                  String       @id @default(uuid()) @db.Uuid
+  userId              String       @map("user_id") @db.Uuid
+  bookId              String       @map("book_id") @db.Uuid
+  user                User         @relation(fields: [userId], references: [id])
+  book                Book         @relation(fields: [bookId], references: [id])
+  quantity            Int
+  price               Float
+  availableQuantity  Int
+  coverPicture        String?      
+  createdAt           DateTime     @default(now()) @map("created_at")
+  updatedAt           DateTime     @updatedAt @map("updated_at")
+  rentals             Rental[]
 }
 
 model Rental {

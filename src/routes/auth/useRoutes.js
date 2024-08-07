@@ -1,6 +1,7 @@
 const express = require('express');
 const userController = require('../../controllers/auth/userContoller');
 const authenticate = require('../../middlewares/authenticate');
+const upload = require('../../middlewares/multerConfig');
 
 const router = express.Router();
 
@@ -10,6 +11,7 @@ router.post('/refresh', userController.refreshToken);
 
 // Routes that require authentication
 router.use(authenticate);
+router.post('/complete-profile', authenticate, upload.single('profilePicture'), userController.completeProfile);
 
 // Routes with specific permission checks
 router.get('/users', (req, res) => {

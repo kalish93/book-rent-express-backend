@@ -181,6 +181,7 @@ async function login(req, res) {
     const accessToken = jwtUtils.generateToken({
       id: user.id,
       email: user.email,
+      name: user.name,
       roleId: '',
       permissions: '',
     });
@@ -188,6 +189,7 @@ async function login(req, res) {
     const refreshToken = jwtUtils.generateRefreshToken({
       id: user.id,
       email: user.email,
+      name: user.name,
       roleId: '',
       permissions: '',
     });
@@ -253,6 +255,50 @@ async function changePassword(req, res) {
     res.status(500).send("Internal Server Error");
   }
 }
+
+async function completeProfile(req, res) {
+  try {
+
+    const { name } = req.body;
+    const profilePicture = req.file ? req.file.filename : null; // File path or null if no file
+
+    if (!name ) {
+      return res.status(400).json({ error: "Name is required" });
+    }
+    const userId = req.user.id;
+    const user = await prisma.user.update({
+      where:{
+        id:userId
+      },
+      data: {
+        name: name,
+        profilePicture: profilePicture,
+      },
+    });
+
+    const accessToken = jwtUtils.generateToken({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      roleId: '',
+      permissions: '',
+    });
+
+    const refreshToken = jwtUtils.generateRefreshToken({
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      roleId: '',
+      permissions: '',
+    });
+
+    res.json({ accessToken, refreshToken, user });
+  } catch (error) {
+    console.error("Error creating BookOnUser:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -261,5 +307,6 @@ module.exports = {
   getUserById,
   login,
   refreshToken,
-  changePassword
+  changePassword,
+  completeProfile
 };
