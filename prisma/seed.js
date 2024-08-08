@@ -13,19 +13,10 @@ const roles = [
 
 const categories = [
   { name: "Fiction" },
-  { name: "Non-Fiction" },
-  { name: "Biography" },
   { name: "Self-Help" },
   { name: "History" },
   { name: "Science" },
   { name: "Business" },
-  { name: "Romance" },
-  { name: "Mystery & Thriller" },
-  { name: "Fantasy" },
-  { name: "Science Fiction" },
-  { name: "Children's Books" },
-  { name: "Graphic Novels" },
-  { name: "Poetry" }
 ];
 
 async function seedRoles() {

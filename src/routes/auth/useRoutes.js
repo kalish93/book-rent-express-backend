@@ -8,6 +8,9 @@ const router = express.Router();
 // Public routes
 router.post('/login', userController.login);
 router.post('/refresh', userController.refreshToken);
+router.post('/users', userController.createUser);
+router.put('/approve-book-owner', userController.approveBookOwner);
+router.put('/change-owner-status', userController.changeOwnerStatus);
 
 // Routes that require authentication
 router.use(authenticate);

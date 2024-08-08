@@ -15,7 +15,8 @@ async function getUsers(req, res) {
           phoneNumber: true,
           isApprovedBookOwner: true,
           books: true,
-          roles: true
+          roles: true,
+          profilePicture: true
         }
       });
 
@@ -29,7 +30,7 @@ async function getUsers(req, res) {
 
 async function createUser(req, res) {
   try {
-    const { email, location, phoneNumber, password, passwordConfirmation, roleId } = req.body;
+    const { email, location, phoneNumber, password, passwordConfirmation } = req.body;
 
     if (!email || !password || !passwordConfirmation ) {
       return res.status(400).json({ error: "All fields are required" });
@@ -105,11 +106,11 @@ async function updateUser(req, res) {
 
 async function deleteUser(req, res) {
   try {
+
     const userId = req.params.id;
 
     const deletedUser = await prisma.user.delete({
       where: { id: userId },
-      include: { role: true },
     });
 
     res.json(deletedUser);
@@ -299,6 +300,75 @@ async function completeProfile(req, res) {
   }
 }
 
+async function approveBookOwner(req, res) {
+  try {
+    const {userId }= req.body;
+      const user = await prisma.user.update({
+        where:{
+          id: userId
+        },
+        data: {
+          isApprovedBookOwner: true
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isActive: true,
+          location: true,
+          phoneNumber: true,
+          isApprovedBookOwner: true,
+          books: true,
+          roles: true,
+          profilePicture: true
+        }
+      });
+
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
+async function changeOwnerStatus(req, res) {
+  try {
+    const {userId }= req.body;
+    const u = await prisma.user.findUnique({
+      where:{
+        id: userId
+      }
+    })
+      const user = await prisma.user.update({
+        where:{
+          id: userId
+        },
+        data: {
+          isActive: !u.isActive
+        },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          isActive: true,
+          location: true,
+          phoneNumber: true,
+          isApprovedBookOwner: true,
+          books: true,
+          roles: true,
+          profilePicture: true
+        }
+      });
+
+
+    res.json(user);
+  } catch (error) {
+    console.error("Error retrieving users:", error);
+    res.status(500).send("Internal Server Error");
+  }
+}
+
 module.exports = {
   getUsers,
   createUser,
@@ -308,5 +378,7 @@ module.exports = {
   login,
   refreshToken,
   changePassword,
-  completeProfile
+  completeProfile,
+  approveBookOwner,
+  changeOwnerStatus
 };

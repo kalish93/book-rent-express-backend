@@ -17,12 +17,12 @@ model User {
   phoneNumber           String
   isActive              Boolean        @default(true)
   isApprovedBookOwner   Boolean        @default(false)
-  roles                 UserRole[]   
+  roles                 UserRole[]     
   profilePicture        String? 
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
-  books                 BookOnUser[]
-  rentals               Rental[]
+  books                 BookOnUser[]  
+  rentals               Rental[]      
 }
 
 model Role {
@@ -30,14 +30,14 @@ model Role {
   name                  String
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
-  users                 UserRole[]
+  users                 UserRole[]     
 }
 
 model UserRole {
   userId                String         @map("user_id") @db.Uuid
   roleId                String         @map("role_id") @db.Uuid
-  user                  User           @relation(fields: [userId], references: [id])
-  role                  Role           @relation(fields: [roleId], references: [id])
+  user                  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  role                  Role           @relation(fields: [roleId], references: [id], onDelete: Cascade)
   @@id([userId, roleId])
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
@@ -48,8 +48,8 @@ model Book {
   name                  String
   author                String
   categoryId            String         @map("category_id") @db.Uuid
-  category              Category       @relation(fields: [categoryId], references: [id])
-  owners                BookOnUser[]
+  category              Category       @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  owners                BookOnUser[]   
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
 }
@@ -57,7 +57,7 @@ model Book {
 model Category {
   id                    String         @id @default(uuid()) @db.Uuid
   name                  String
-  books                 Book[]
+  books                 Book[]         
   createdAt             DateTime       @default(now()) @map("created_at")
   updatedAt             DateTime       @updatedAt @map("updated_at")
 }
@@ -66,23 +66,24 @@ model BookOnUser {
   id                  String       @id @default(uuid()) @db.Uuid
   userId              String       @map("user_id") @db.Uuid
   bookId              String       @map("book_id") @db.Uuid
-  user                User         @relation(fields: [userId], references: [id])
-  book                Book         @relation(fields: [bookId], references: [id])
+  user                User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  book                Book         @relation(fields: [bookId], references: [id], onDelete: Cascade)
   quantity            Int
   price               Float
   availableQuantity  Int
-  coverPicture        String?      
+  coverPicture        String?  
+  isApproved          Boolean      @default(false)    
   createdAt           DateTime     @default(now()) @map("created_at")
   updatedAt           DateTime     @updatedAt @map("updated_at")
-  rentals             Rental[]
+  rentals             Rental[]     
 }
 
 model Rental {
   id                    String         @id @default(uuid()) @db.Uuid
   bookOnUserId          String         @map("book_on_user_id") @db.Uuid
-  bookOnUser            BookOnUser     @relation(fields: [bookOnUserId], references: [id])
+  bookOnUser            BookOnUser     @relation(fields: [bookOnUserId], references: [id], onDelete: Cascade)
   userId                String         @map("user_id") @db.Uuid
-  user                  User           @relation(fields: [userId], references: [id])
+  user                  User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   rentedAt              DateTime       @default(now())
   returnedAt            DateTime?
   rentalPrice           Float
